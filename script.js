@@ -19,3 +19,7 @@ const Gameboard = (() => {
     resetBoard,
   };
 })();
+
+const Player = (name, marker) => {
+  return { name, marker };
+};
