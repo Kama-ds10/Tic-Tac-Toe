@@ -124,3 +124,33 @@ GameController.playRound(1);
 GameController.playRound(4);
 GameController.playRound(2);
 GameController.playRound(8);
+
+
+
+const DisplayController = (() => {
+  const boardContainer = document.querySelector(".gameboard");
+
+  const render = () => {
+    const board = Gameboard.getBoard();
+
+    // Clear board before re-rendering
+    boardContainer.innerHTML = "";
+
+    board.forEach((cell, index) => {
+      const cellDiv = document.createElement("div");
+      cellDiv.classList.add("cell");
+      cellDiv.dataset.index = index;
+      cellDiv.textContent = cell;
+
+      boardContainer.appendChild(cellDiv);
+    });
+  };
+
+  return {
+    render,
+  };
+})();
+
+Gameboard.setCell(0, "X");
+Gameboard.setCell(1, "O");
+DisplayController.render();
