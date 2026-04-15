@@ -27,13 +27,21 @@ const Player = (name, marker) => {
   return { name, marker };
 };
 
-
+// gamecontroller
 const GameController = (() => {
-  const player1 = Player("Player 1", "X");
-  const player2 = Player("Player 2", "O");
+  let player1;
+  let player2;
 
-  let currentPlayer = player1;
+  let currentPlayer;
   let gameOver = false;
+
+  const initGame = (name1, name2) => {
+    player1 = Player(name1 || "Player 1", "X");
+    player2 = Player(name2 || "Player 2", "O");
+    currentPlayer = player1;
+    gameOver = false;
+    Gameboard.resetBoard();
+  };
 
   const getCurrentPlayer = () => currentPlayer;
 
@@ -41,79 +49,50 @@ const GameController = (() => {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
   };
 
+const playRound = (index) => {
+  if (!currentPlayer) {
+    return "Start the game first!";
+  }
 
-  const playRound = (index) => {
-    if (gameOver) {
-      console.log("Game is over. Restart to play again.");
-      return;
-    }
+  if (gameOver) return "Game over";
 
-    const moveSuccess = Gameboard.setCell(index, currentPlayer.marker);
+  const moveSuccess = Gameboard.setCell(index, currentPlayer.marker);
+  if (!moveSuccess) return "Invalid move";
 
-    if (!moveSuccess) {
-      console.log("Invalid move. Try another spot.");
-      return;
-    }
+  if (checkWinner()) {
+    gameOver = true;
+    return `${currentPlayer.name} wins!`;
+  }
 
-    console.log(Gameboard.getBoard());
+  if (checkTie()) {
+    gameOver = true;
+    return "It's a tie!";
+  }
 
-    if (checkWinner()) {
-      console.log(`${currentPlayer.name} wins! 🎉`);
-      gameOver = true;
-      return;
-    }
-
-    if (checkTie()) {
-      console.log("It's a tie! 🤝");
-      gameOver = true;
-      return;
-    }
-
-    switchPlayer();
-  };
-
+  switchPlayer();
+  return null;
+};
 
   const checkWinner = () => {
     const board = Gameboard.getBoard();
-
-    const winPatterns = [
-      [0,1,2],
-      [3,4,5],
-      [6,7,8],
-      [0,3,6],
-      [1,4,7],
-      [2,5,8],
-      [0,4,8],
-      [2,4,6]
+    const patterns = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
     ];
 
-    return winPatterns.some(([a, b, c]) => {
-      return (
-        board[a] &&
-        board[a] === board[b] &&
-        board[a] === board[c]
-      );
-    });
+    return patterns.some(([a,b,c]) =>
+      board[a] && board[a] === board[b] && board[a] === board[c]
+    );
   };
-
 
   const checkTie = () => {
-    const board = Gameboard.getBoard();
-    return board.every(cell => cell !== "");
+    return Gameboard.getBoard().every(cell => cell !== "");
   };
-
-
-  const restartGame = () => {
-    Gameboard.resetBoard();
-    currentPlayer = player1;
-    gameOver = false;
-    console.log("Game restarted 🔄");
-  };
-
 
   return {
+    initGame,
     playRound,
-    restartGame,
     getCurrentPlayer
   };
 })();
@@ -126,14 +105,18 @@ GameController.playRound(2);
 GameController.playRound(8);
 
 
-
 const DisplayController = (() => {
   const boardContainer = document.querySelector(".gameboard");
+  const statusDiv = document.querySelector(".status");
+
+  const startBtn = document.getElementById("startBtn");
+  const restartBtn = document.getElementById("restartBtn");
+
+  const player1Input = document.getElementById("player1");
+  const player2Input = document.getElementById("player2");
 
   const render = () => {
     const board = Gameboard.getBoard();
-
-    // Clear board before re-rendering
     boardContainer.innerHTML = "";
 
     board.forEach((cell, index) => {
@@ -142,9 +125,43 @@ const DisplayController = (() => {
       cellDiv.dataset.index = index;
       cellDiv.textContent = cell;
 
+      cellDiv.addEventListener("click", handleClick);
+
       boardContainer.appendChild(cellDiv);
     });
   };
+
+  const handleClick = (e) => {
+  if (!GameController.getCurrentPlayer()) {
+    statusDiv.textContent = "Click Start Game first!";
+    return;
+  }
+
+  const index = e.target.dataset.index;
+  const result = GameController.playRound(index);
+
+  render();
+
+  if (result) {
+    statusDiv.textContent = result;
+  } else {
+    statusDiv.textContent = `${GameController.getCurrentPlayer().name}'s turn`;
+  }
+};
+
+  const startGame = () => {
+    GameController.initGame(player1Input.value, player2Input.value);
+    statusDiv.textContent = `${GameController.getCurrentPlayer().name}'s turn`;
+    render();
+  };
+
+  const restartGame = () => {
+    startGame();
+    statusDiv.textContent = "Game restarted 🔄";
+  };
+
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", restartGame);
 
   return {
     render,
