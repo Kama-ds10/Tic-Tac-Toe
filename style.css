@@ -1,14 +1,15 @@
+/* style.css */
 /* Reset some defaults */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Georgia", "Times New Roman", serif;
 }
 
 body {
-  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
-  color: #fff;
+  background-color: #f4f1ea; /* Warm classic paper canvas background */
+  color: #2c3e50;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,95 +20,109 @@ body {
 /* Controls */
 .controls {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 30px;
 }
 
 .controls input {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #bdc3c7;
+  background: #fff;
+  color: #2c3e50;
   outline: none;
-  width: 140px;
+  width: 150px;
+  font-size: 0.95rem;
 }
 
 .controls button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  background: #6c5ce7;
-  color: white;
+  padding: 12px 20px;
+  border: 1px solid #2c3e50;
+  border-radius: 4px;
+  background: #2c3e50;
+  color: #f4f1ea;
+  font-weight: bold;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: all 0.2s ease;
 }
 
+/* Fixed spacing bug here */
 .controls button:hover {
-  background: #4834d4;
+  background: #fff;
+  color: #2c3e50;
 }
 
 /* Status text */
 .status {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #f1c40f;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+  font-style: italic;
+  font-weight: 600;
+  color: #2c3e50;
+  height: 2rem;
 }
 
-/* Gameboard */
+/* Gameboard - Classic crisp grid layout lines instead of isolated cards */
 .gameboard {
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  gap: 10px;
+  grid-template-columns: repeat(3, 110px);
+  grid-template-rows: repeat(3, 110px);
+  background-color: #2c3e50; /* Acts as the clean line grid border color */
+  gap: 3px;
+  padding: 3px;
 }
 
 /* Cells */
 .cell {
-  width: 100px;
-  height: 100px;
-  background: #2f3640;
+  background: #f4f1ea; /* Matches background to disguise the block outline */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: bold;
-  border-radius: 12px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background 0.2s ease;
+  user-select: none;
 }
 
-/* Hover effect */
+/* Fixed hover spacing bug */
 .cell:hover {
-  background: #353b48;
-  transform: scale(1.05);
+  background: #eae6db;
 }
 
-/* X and O colors */
 .cell:has(:not(:empty)) {
   cursor: not-allowed;
 }
 
-.cell {
-  color: #00cec9;
+/* Dynamic styling classes based on Marker type rather than even/odd indices */
+.cell.x-marker {
+  color: #d63031; /* Classic sharp red for X */
 }
 
-.cell:nth-child(even) {
-  color: #ff7675;
+.cell.o-marker {
+  color: #0984e3; /* Classic crisp blue for O */
 }
 
-/* Buttons spacing for mobile */
+/* Responsive constraints for classic gameplay layout sizing */
 @media (max-width: 500px) {
   .gameboard {
-    grid-template-columns: repeat(3, 80px);
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
   }
 
   .cell {
-    width: 80px;
-    height: 80px;
-    font-size: 2rem;
+    font-size: 2.8rem;
   }
 
   .controls {
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .controls input,
+  .controls button {
+    width: 100%;
   }
 }
